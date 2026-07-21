@@ -1,0 +1,6 @@
+{
+  "name": "ResumesCraft AI",
+  "description": "An AI-powered, ATS-optimized resume builder and tailoring assistant that creates stunning resumes, enhances bullet points, and matches them to job descriptions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

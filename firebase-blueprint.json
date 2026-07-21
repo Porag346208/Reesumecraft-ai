@@ -1,0 +1,29 @@
+{
+  "collections": {
+    "users": {
+      "fields": {
+        "email": "string",
+        "createdAt": "timestamp",
+        "plan": "string"
+      }
+    },
+    "resumes": {
+      "fields": {
+        "userId": "string",
+        "name": "string",
+        "data": "map",
+        "style": "map",
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      },
+      "indexes": [
+        {
+          "fields": {
+            "userId": "asc",
+            "updatedAt": "desc"
+          }
+        }
+      ]
+    }
+  }
+}

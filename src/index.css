@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+/* Hover Spin Animation */
+@keyframes hover-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-hover-spin:hover {
+  animation: hover-spin 0.8s ease-in-out;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Print Stylesheet */
+@media print {
+  /* Hide all elements by default */
+  html, body, #root, #root > div, #main-header, #hero-section, .print\:hidden {
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Focus solely on the printable resume and force render background colors */
+  #printable-resume, #printable-resume * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  #printable-resume {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 21cm !important;
+    min-height: 29.7cm !important;
+    margin: 0 !important;
+    padding: 1.5cm !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+/* Dark Workspace overrides */
+.workspace-form-override h3 {
+  color: #ffffff !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+.workspace-form-override label {
+  color: #a1a1aa !important; /* text-zinc-400 */
+}
+.workspace-form-override input[type="text"],
+.workspace-form-override input[type="email"],
+.workspace-form-override input[type="month"],
+.workspace-form-override select,
+.workspace-form-override textarea {
+  background-color: rgba(9, 9, 11, 0.8) !important; /* bg-zinc-950/80 */
+  border-color: rgba(255, 255, 255, 0.1) !important; /* border-white/10 */
+  color: #f4f4f5 !important; /* text-zinc-100 */
+}
+.workspace-form-override input[type="text"]:focus,
+.workspace-form-override input[type="email"]:focus,
+.workspace-form-override input[type="month"]:focus,
+.workspace-form-override select:focus,
+.workspace-form-override textarea:focus {
+  border-color: #6366f1 !important; /* border-indigo-500 */
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
+}
+.workspace-form-override input::placeholder,
+.workspace-form-override textarea::placeholder {
+  color: #52525b !important; /* text-zinc-600 */
+}
+.workspace-form-override input[type="checkbox"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(9, 9, 11, 0.8) !important;
+}
+.workspace-form-override .text-slate-400 {
+  color: #71717a !important; /* text-zinc-500 */
+}
+.workspace-form-override .text-slate-500 {
+  color: #a1a1aa !important; /* text-zinc-400 */
+}
+.workspace-form-override .text-slate-600 {
+  color: #d4d4d8 !important; /* text-zinc-300 */
+}
+.workspace-form-override .text-slate-700 {
+  color: #f4f4f5 !important; /* text-zinc-100 */
+}
+.workspace-form-override .text-slate-800 {
+  color: #ffffff !important;
+}
+.workspace-form-override .bg-slate-50 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+.workspace-form-override .border-slate-100,
+.workspace-form-override .border-slate-200,
+.workspace-form-override .divide-slate-100 > * {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.workspace-form-override .text-indigo-600,
+.workspace-form-override .text-indigo-700 {
+  color: #818cf8 !important; /* text-indigo-400 */
+}
+.workspace-form-override .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+.workspace-form-override .bg-indigo-50:hover {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+}
+.workspace-form-override .bg-rose-50:hover {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+.workspace-form-override .hover\:bg-rose-50:hover {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+.workspace-form-override .text-rose-600,
+.workspace-form-override .text-rose-700 {
+  color: #f87171 !important; /* text-rose-400 */
+}
+.workspace-form-override .bg-rose-50 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+.workspace-form-override .bg-slate-100 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #e4e4e7 !important;
+}
+.workspace-form-override .bg-white {
+  background-color: transparent !important;
+}
+
+/* Cream Theme Workspace overrides */
+.workspace-form-override-cream h3 {
+  color: #403a2f !important;
+  border-bottom-color: #e4ded0 !important;
+}
+.workspace-form-override-cream label {
+  color: #706757 !important;
+}
+.workspace-form-override-cream input[type="text"],
+.workspace-form-override-cream input[type="email"],
+.workspace-form-override-cream input[type="month"],
+.workspace-form-override-cream select,
+.workspace-form-override-cream textarea {
+  background-color: #fbf7ee !important;
+  border-color: #e4ded0 !important;
+  color: #2d2922 !important;
+}
+.workspace-form-override-cream input[type="text"]:focus,
+.workspace-form-override-cream input[type="email"]:focus,
+.workspace-form-override-cream input[type="month"]:focus,
+.workspace-form-override-cream select:focus,
+.workspace-form-override-cream textarea:focus {
+  border-color: #8c7b64 !important;
+  box-shadow: 0 0 0 2px rgba(140, 123, 100, 0.15) !important;
+}
+.workspace-form-override-cream input::placeholder,
+.workspace-form-override-cream textarea::placeholder {
+  color: #b0a490 !important;
+}
+.workspace-form-override-cream input[type="checkbox"] {
+  border-color: #e4ded0 !important;
+  background-color: #fbf7ee !important;
+}
+.workspace-form-override-cream .text-slate-400 {
+  color: #706757 !important;
+}
+.workspace-form-override-cream .text-slate-500 {
+  color: #5d5446 !important;
+}
+.workspace-form-override-cream .text-slate-600 {
+  color: #403a2f !important;
+}
+.workspace-form-override-cream .text-slate-700 {
+  color: #2d2922 !important;
+}
+.workspace-form-override-cream .text-slate-800 {
+  color: #1a1814 !important;
+}
+.workspace-form-override-cream .bg-slate-50 {
+  background-color: rgba(140, 123, 100, 0.05) !important;
+}
+.workspace-form-override-cream .border-slate-100,
+.workspace-form-override-cream .border-slate-200,
+.workspace-form-override-cream .divide-slate-100 > * {
+  border-color: #e4ded0 !important;
+}
+.workspace-form-override-cream .text-indigo-600,
+.workspace-form-override-cream .text-indigo-700 {
+  color: #8c7b64 !important;
+}
+.workspace-form-override-cream .bg-indigo-50 {
+  background-color: rgba(140, 123, 100, 0.08) !important;
+  border-color: rgba(140, 123, 100, 0.15) !important;
+}
+.workspace-form-override-cream .bg-indigo-50:hover {
+  background-color: rgba(140, 123, 100, 0.12) !important;
+}
+.workspace-form-override-cream .bg-rose-50:hover {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+.workspace-form-override-cream .hover\:bg-rose-50:hover {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+.workspace-form-override-cream .text-rose-600,
+.workspace-form-override-cream .text-rose-700 {
+  color: #b91c1c !important;
+}
+.workspace-form-override-cream .bg-rose-50 {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.15) !important;
+}
+.workspace-form-override-cream .bg-slate-100 {
+  background-color: rgba(140, 123, 100, 0.05) !important;
+  border-color: #e4ded0 !important;
+  color: #403a2f !important;
+}
+.workspace-form-override-cream .bg-white {
+  background-color: transparent !important;
+}
+

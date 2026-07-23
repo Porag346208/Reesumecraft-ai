@@ -63,6 +63,10 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
   const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string; content: string; type: string }[]>([]);
   const [selectedUploadedFile, setSelectedUploadedFile] = useState<{ name: string; content: string; type: string } | null>(null);
 
+  // Resume Delete Confirmation Modal State
+  const [resumeToDelete, setResumeToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const fetchResumes = async () => {
     if (!user) return;
     setIsLoading(true);
@@ -85,8 +89,8 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
         });
       });
       setResumes(fetched);
-    } catch (err) {
-      console.error('Error fetching resumes:', err);
+    } catch (err: any) {
+      console.warn('Unable to fetch resumes (offline mode or network error):', err?.message || err);
     } finally {
       setIsLoading(false);
     }
@@ -136,16 +140,35 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
     }
   };
 
-  const handleDeleteResume = async (id: string, e: React.MouseEvent) => {
+  const confirmDeleteResume = (resume: SavedResume, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm('Are you sure you want to delete this resume? This cannot be undone.')) {
-      return;
-    }
+    setResumeToDelete({ id: resume.id, name: resume.name });
+  };
+
+  const executeDeleteResume = async () => {
+    if (!resumeToDelete) return;
+    const targetId = resumeToDelete.id;
+    setIsDeleting(true);
+
+    // Optimistically filter from state so UI updates immediately
+    setResumes((prev) => prev.filter((r) => r.id !== targetId));
+
     try {
-      await deleteDoc(doc(db, 'resumes', id));
-      setResumes((prev) => prev.filter((r) => r.id !== id));
-    } catch (err) {
-      console.error('Error deleting resume:', err);
+      await deleteDoc(doc(db, 'resumes', targetId));
+    } catch (err: any) {
+      console.warn('Error removing resume from cloud:', err?.message || err);
+    } finally {
+      setIsDeleting(false);
+      setResumeToDelete(null);
+    }
+  };
+
+  const handleDeleteUploadedFile = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const fileToRemove = uploadedFiles[index];
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    if (selectedUploadedFile?.name === fileToRemove?.name) {
+      setSelectedUploadedFile(null);
     }
   };
 
@@ -507,8 +530,8 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
                         <FileText className="h-5 w-5" />
                       </div>
                       <button
-                        onClick={(e) => handleDeleteResume(resume.id, e)}
-                        className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all"
+                        onClick={(e) => confirmDeleteResume(resume, e)}
+                        className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
                         title="Delete resume"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -563,8 +586,8 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
                         Layout: {resume.style.template}
                       </span>
                       <button
-                        onClick={(e) => handleDeleteResume(resume.id, e)}
-                        className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all"
+                        onClick={(e) => confirmDeleteResume(resume, e)}
+                        className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
                         title="Delete resume"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -639,7 +662,16 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
                           <FileText className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
                           <span className="truncate font-medium">{f.name}</span>
                         </div>
-                        <span className="text-[9px] text-zinc-500 shrink-0 font-mono">{f.size}</span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[9px] text-zinc-500 font-mono">{f.size}</span>
+                          <button
+                            onClick={(e) => handleDeleteUploadedFile(i, e)}
+                            className="p-1 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-all cursor-pointer"
+                            title="Remove file"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -685,6 +717,60 @@ export default function Dashboard({ onEditResume, onOpenPricing, onCreateNew, ap
         </div>
 
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {resumeToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+          <div className={`w-full max-w-md p-6 rounded-3xl border shadow-2xl space-y-5 ${
+            appTheme === 'dark' 
+              ? 'bg-zinc-900 border-white/10 text-white' 
+              : appTheme === 'cream'
+                ? 'bg-[#fcfaf2] border-[#e4ded0] text-[#2d2922]'
+                : 'bg-white border-zinc-200 text-zinc-900'
+          }`}>
+            <div className="flex items-center gap-3 text-rose-500">
+              <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+                <Trash2 className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Delete Resume?</h3>
+                <p className="text-xs text-zinc-400">This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-zinc-300 leading-relaxed">
+              Are you sure you want to delete <strong className="text-indigo-400 font-bold">"{resumeToDelete.name}"</strong>?
+            </p>
+
+            <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+              <button
+                onClick={() => setResumeToDelete(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeDeleteResume}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete Resume</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

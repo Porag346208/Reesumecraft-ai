@@ -33,8 +33,12 @@ export default function AuthScreen({ onSuccess, onBack }: AuthScreenProps) {
         setError('Popup was blocked by the browser. Please allow popups for this site.');
       } else if (err.code === 'auth/popup-closed-by-user') {
         setError('The sign-in window was closed before completion.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError('Domain not authorized! In Firebase Console > Authentication > Settings > Authorized domains, add "localhost" and "127.0.0.1".');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setError('Google Sign-in is disabled in Firebase Console. Go to Authentication > Sign-in method and enable Google provider.');
       } else {
-        setError(err.message || 'Google sign-in failed. Please try again.');
+        setError(err.message || 'Google sign-in failed. Please check your browser popup settings or Firebase Console.');
       }
     } finally {
       setIsLoading(false);
@@ -72,6 +76,10 @@ export default function AuthScreen({ onSuccess, onBack }: AuthScreenProps) {
         setError('Password should be at least 6 characters.');
       } else if (err.code === 'auth/operation-not-allowed') {
         setError('Email/Password sign-in is not enabled. Please enable "Email/Password" under Sign-in providers in the Firebase Authentication Console.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError('Domain not authorized! In Firebase Console > Authentication > Settings > Authorized domains, add "localhost" and "127.0.0.1".');
+      } else if (err.code === 'auth/network-request-failed') {
+        setError('Network request failed. Please check your internet connection or firewall/ad-blocker.');
       } else {
         setError(err.message || 'Authentication failed. Please try again.');
       }

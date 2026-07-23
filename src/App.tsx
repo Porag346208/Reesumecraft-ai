@@ -90,6 +90,9 @@ function AppContent() {
   // Controls the active tab inside the editor panel (left column)
   const [editorSubMode, setEditorSubMode] = useState<'fields' | 'ats' | 'magic'>('fields');
 
+  // Clear confirmation modal state
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
   // Auto load latest resume when user authenticates
   useEffect(() => {
     const loadLatestUserResume = async (uid: string) => {
@@ -109,8 +112,8 @@ function AppContent() {
           if (resData.data) setResumeData(resData.data);
           if (resData.style) setStyle(resData.style);
         }
-      } catch (e) {
-        console.error("Error loading latest resume:", e);
+      } catch (e: any) {
+        console.warn("Unable to load latest resume from cloud (offline mode or network error):", e?.message || e);
       }
     };
 
@@ -129,9 +132,12 @@ function AppContent() {
   };
 
   const handleClear = () => {
-    if (window.confirm("Are you sure you want to clear your current resume details?")) {
-      setResumeData(emptyResume);
-    }
+    setShowClearConfirm(true);
+  };
+
+  const executeClear = () => {
+    setResumeData(emptyResume);
+    setShowClearConfirm(false);
   };
 
   const handleStartBuilding = (template?: ResumeTemplate) => {
@@ -624,6 +630,48 @@ function AppContent() {
           <span className="hidden sm:inline">Cream</span>
         </button>
       </div>
+
+      {/* Clear Draft Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+          <div className={`w-full max-w-md p-6 rounded-3xl border shadow-2xl space-y-5 ${
+            appTheme === 'dark' 
+              ? 'bg-zinc-900 border-white/10 text-white' 
+              : appTheme === 'cream'
+                ? 'bg-[#fcfaf2] border-[#e4ded0] text-[#2d2922]'
+                : 'bg-white border-zinc-200 text-zinc-900'
+          }`}>
+            <div className="flex items-center gap-3 text-rose-500">
+              <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+                <FileText className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Clear Resume Draft?</h3>
+                <p className="text-xs text-zinc-400">This will reset all current fields to blank.</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-zinc-300 leading-relaxed">
+              Are you sure you want to clear your current resume details in the editor?
+            </p>
+
+            <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeClear}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition-all shadow-md cursor-pointer"
+              >
+                Clear All Fields
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

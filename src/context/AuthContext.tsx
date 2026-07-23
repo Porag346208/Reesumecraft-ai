@@ -29,6 +29,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (uid: string) => {
+    const fallbackProfile: UserProfile = {
+      email: auth.currentUser?.email || '',
+      plan: 'free',
+      createdAt: new Date()
+    };
+
     try {
       const docRef = doc(db, "users", uid);
       const docSnap = await getDoc(docRef);
@@ -41,11 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           plan: 'free',
           createdAt: new Date()
         };
-        await setDoc(docRef, newProfile);
+        try {
+          await setDoc(docRef, newProfile);
+        } catch (setErr) {
+          console.warn("Unable to create user profile online (offline mode):", setErr);
+        }
         setProfile(newProfile);
       }
-    } catch (e) {
-      console.error("Error fetching user profile:", e);
+    } catch (e: any) {
+      console.warn("Unable to fetch user profile (offline or network error), using default fallback:", e?.message || e);
+      setProfile(fallbackProfile);
     }
   };
 

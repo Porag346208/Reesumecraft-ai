@@ -1,20 +1,23 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBD0-wXSr9zCiVUPP3nhPLrFhyzGe10_lc",
-  authDomain: "my-resume-app-1375a.firebaseapp.com",
-  projectId: "my-resume-app-1375a",
-  storageBucket: "my-resume-app-1375a.firebasestorage.app",
-  messagingSenderId: "136023997064",
-  appId: "1:136023997064:web:c8fc97963b2e5b36d1fd3d",
-  measurementId: "G-7S1XT8HVSV"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCZ3F3Qsp63XcS9QH2KestGn3Cbxo4EW_4",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "sacred-key-82l12.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "sacred-key-82l12",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "sacred-key-82l12.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "594754928841",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:594754928841:web:76b08986776bbc689a8d18",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ""
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+const dbId = import.meta.env.VITE_FIREBASE_FIRESTORE_DB_ID || 
+  (firebaseConfig.projectId === "sacred-key-82l12" ? "ai-studio-resumescraftai-71cace9b-26f1-4eda-be96-e4d5e536be68" : "(default)");
 
 // Initialize Services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = dbId && dbId !== "(default)" ? getFirestore(app, dbId) : getFirestore(app);

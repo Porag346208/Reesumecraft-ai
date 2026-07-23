@@ -73,15 +73,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        await fetchProfile(currentUser.uid);
-      } else {
-        setProfile(null);
-      }
+    let unsubscribe = () => {};
+    try {
+      unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        setUser(currentUser);
+        if (currentUser) {
+          await fetchProfile(currentUser.uid);
+        } else {
+          setProfile(null);
+        }
+        setLoading(false);
+      }, (error) => {
+        console.error("Auth state change error:", error);
+        setLoading(false);
+      });
+    } catch (err) {
+      console.error("Failed to setup auth state listener:", err);
       setLoading(false);
-    });
+    }
 
     return () => unsubscribe();
   }, []);
